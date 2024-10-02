@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to URL Converter</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        img { max-width: 400px; margin-top: 10px; }
+        input { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Image to URL Converter</h1>
+    <input type="file" id="imageUpload" accept="image/*">
+    <br><br>
+    <img id="selectedImage" alt="Selected Image" />
+    <br>
+    <input type="text" id="imageUrl" placeholder="Generated Image URL" readonly />
+    <button id="copyUrlButton">Copy Image URL</button>
+
+    <script>
+        // Display the selected image and generate a URL
+        document.getElementById('imageUpload').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const img = document.getElementById('selectedImage');
+                const imageUrl = URL.createObjectURL(file);
+                img.src = imageUrl; // Set the image source
+                document.getElementById('imageUrl').value = imageUrl; // Show the generated URL
+            }
+        });
+
+        // Copy the generated URL to the clipboard
+        document.getElementById('copyUrlButton').addEventListener('click', () => {
+            const urlField = document.getElementById('imageUrl');
+            urlField.select();
+            document.execCommand('copy'); // Copy the URL to clipboard
+            alert('Image URL copied to clipboard: ' + urlField.value);
+        });
+    </script>
+</body>
+</html>
