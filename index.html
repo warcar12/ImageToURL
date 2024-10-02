@@ -22,6 +22,18 @@
     <script>
         const IMGUR_CLIENT_ID = 'YOUR_IMGUR_CLIENT_ID'; // Replace with your Imgur Client ID
 
+        // Function to load the saved URL from localStorage
+        function loadSavedUrl() {
+            const savedUrl = localStorage.getItem('imageUrl');
+            if (savedUrl) {
+                document.getElementById('imageUrl').value = savedUrl;
+                document.getElementById('selectedImage').src = savedUrl; // Display the saved image
+            }
+        }
+
+        // Call the load function when the page loads
+        window.onload = loadSavedUrl;
+
         // Display the selected image
         document.getElementById('imageUpload').addEventListener('change', async (event) => {
             const file = event.target.files[0];
@@ -32,6 +44,7 @@
                 try {
                     const permanentUrl = await uploadImageToImgur(file);
                     document.getElementById('imageUrl').value = permanentUrl; // Show the permanent URL
+                    localStorage.setItem('imageUrl', permanentUrl); // Save URL in localStorage
                 } catch (error) {
                     console.error('Error uploading image:', error);
                 }
