@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image to URL Converter</title>
+    <title>Image to Permanent URL Converter</title>
     <style>
         body { font-family: Arial, sans-serif; }
         img { max-width: 400px; margin-top: 10px; }
@@ -11,7 +11,7 @@
     </style>
 </head>
 <body>
-    <h1>Image to URL Converter</h1>
+    <h1>Image to Permanent URL Converter</h1>
     <input type="file" id="imageUpload" accept="image/*">
     <br><br>
     <img id="selectedImage" alt="Selected Image" />
@@ -20,16 +20,44 @@
     <button id="copyUrlButton">Copy Image URL</button>
 
     <script>
-        // Display the selected image and generate a URL
-        document.getElementById('imageUpload').addEventListener('change', (event) => {
+        const IMGUR_CLIENT_ID = 'YOUR_IMGUR_CLIENT_ID'; // Replace with your Imgur Client ID
+
+        // Display the selected image
+        document.getElementById('imageUpload').addEventListener('change', async (event) => {
             const file = event.target.files[0];
             if (file) {
                 const img = document.getElementById('selectedImage');
-                const imageUrl = URL.createObjectURL(file);
-                img.src = imageUrl; // Set the image source
-                document.getElementById('imageUrl').value = imageUrl; // Show the generated URL
+                img.src = URL.createObjectURL(file); // Show the selected image
+
+                try {
+                    const permanentUrl = await uploadImageToImgur(file);
+                    document.getElementById('imageUrl').value = permanentUrl; // Show the permanent URL
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                }
             }
         });
+
+        // Upload image to Imgur and return the permanent URL
+        async function uploadImageToImgur(file) {
+            const formData = new FormData();
+            formData.append('image', file);
+
+            const response = await fetch('https://api.imgur.com/3/image', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Client-ID ${IMGUR_CLIENT_ID}`
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                return data.data.link; // Return the permanent URL
+            } else {
+                throw new Error('Failed to upload image');
+            }
+        }
 
         // Copy the generated URL to the clipboard
         document.getElementById('copyUrlButton').addEventListener('click', () => {
